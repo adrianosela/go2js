@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>go2js test</title>
+</head>
+<body>
+    <h1>Testing go2js</h1>
+    <script src="wasm_exec.js"></script>
+    <script>
+        const go = new Go();
+
+        window.onRead = () => {
+            return "Hello from JavaScript!";
+        };
+        window.onWrite = (data) => {
+            let textDecoder = new TextDecoder();
+            let decodedString = textDecoder.decode(data);
+            console.log("Data received from Go:", decodedString);
+        };
+        window.onClose = () => {
+            console.log("Connection closed");
+        };
+
+        WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((result) => {
+            go.run(result.instance);
+        });
+    </script>
+</body>
+</html>
